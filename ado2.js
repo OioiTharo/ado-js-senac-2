@@ -6,7 +6,7 @@
  * @return {string[]} Os nomes dos alunos que fizeram este exercício.
  */
 function nomesDosAlunos() {
-    return [ "João da Silva", "Maria da Silva" ];
+    return [ "Thais Rodrigues Andrade", "Giovanna Ronqui Bonavolonta", "Giovanna Barros de Oliveira" ];
 }
 
 /**
@@ -48,19 +48,33 @@ class Nota {
      * @param {number} peso O peso da nota, entre 0 a 10, na composição total da nota semestral.
      */
     #verificar(valor, peso) {
-        naoFizIssoAinda();
+        if (!Number.isFinite(valor) || !Number.isFinite(peso)) {
+			throw new TypeError("A nota e o peso devem ser numéricos.");
+		}
+
+		if (valor < 0 || valor > 10 || peso < 0 || peso > 10) {
+			throw new RangeError("A nota e o peso devem ser um número entre 0 e 10.");
+		}
     }
 
     // EXERCÍCIO 2.
     // Crie os métodos getters necessários de todos os parâmetros recebidos no construtor aqui.
-
+			
+		get peso(){
+			return  this.#peso;
+		}
+		get valor(){
+			return this.#valor;
+		}   
+    
+	
     // EXERCÍCIO 3.
     /**
      * Retorna o valor ponderado desta nota. Ou seja, a nota numa escala de 0 a peso.
      * @returns {number} O valor ponderado desta nota.
      */
     get notaPonderada() {
-        naoFizIssoAinda();
+        return (this.#peso / 10) * this.#valor;
     }
 
     // EXERCÍCIO 4.
@@ -71,7 +85,7 @@ class Nota {
      * @returns {String} A representação string deste objeto.
      */
     toString() {
-        naoFizIssoAinda();
+        return `nota = ${this.#valor}, peso = ${this.#peso}`;
     }
 }
 
@@ -85,6 +99,11 @@ class Nota {
  * A presença é um inteiro entre 0 e 100 representando a porcentagem de comparecimento às aulas.
  */
 class AlunoMatricula {
+	#nome;
+	#genero;
+	#disciplina;
+	#ados;
+	#presenca;
 
     // EXERCÍCIO 5.
     /**
@@ -120,12 +139,49 @@ class AlunoMatricula {
      * @throw RangeError Se o valor de qualquer parâmetro não for aceitável.
      */
     constructor(nome, genero, disciplina, ados, presenca) {
-        naoFizIssoAinda();
+        if (typeof nome !== 'string' ) {
+			throw new RangeError ('Nome inválido');
+		}
+		if (typeof genero !== 'string' || (genero !== 'M' && genero !== 'F')) {
+			throw new RangeError('Gênero inválido');
+		}
+		if (typeof disciplina !== 'string' || !disciplina.trim()) {
+			throw new TypeError('Disciplina inválido');
+		}
+		if (!Array.isArray(ados) || ados.some(nota => !(nota instanceof Nota))) {
+			throw new TypeError('A lista de ADOs deve ser um array de instâncias da classe Nota');
+		}
+		if (presenca < 0 || presenca > 100 || typeof presenca !== 'number') {
+			throw new RangeError('A presença deve ser um número entre 0 e 100');
+		}
+		if (ados.reduce((sum, nota) => sum + nota.peso, 0) !== 10) {
+			throw new RangeError('A soma dos pesos das notas deve ser igual a 10');
+		}
+
+		this.#nome = nome;
+		this.#genero = genero;
+		this.#disciplina = disciplina;
+		this.#ados = ados;
+		this.#presenca = presenca;
     }
 
     // EXERCÍCIO 6.
     // Crie os métodos getters necessários de todos os parâmetros recebidos no construtor aqui.
-
+	get nome(){
+		return this.#nome;
+	}
+	get genero(){
+		return this.#genero;
+	}
+	get disciplina(){
+		return this.#disciplina;
+	}
+	get ados(){
+		return this.#ados;
+	}
+	get presenca(){
+		return this.#presenca;
+	}
     // EXERCÍCIO 7.
     /**
      * Este método calcula a nota final do(a) aluno(a) na disciplina.
@@ -134,9 +190,17 @@ class AlunoMatricula {
      * @returns {number} A média final do(a) aluno(a) na disciplina.
      */
     get media() {
-        naoFizIssoAinda();
+        let somaNotasPonderadas = 0;
+		let somaPesos = 0;
+		for (const nota of this.#ados) {
+			somaNotasPonderadas += nota.peso / 10 * nota.valor;
+			somaPesos += nota.peso;
+		}
+		if (somaPesos !== 10) {
+			throw new RangeError('A soma dos pesos das notas deve ser igual a 10');
+		}
+		return somaNotasPonderadas;
     }
-
     // EXERCÍCIO 8.
     /**
      * Este método deve retornar a situação do(a) aluno(a), que é uma dessas 4:
@@ -152,7 +216,18 @@ class AlunoMatricula {
      * @returns {String} A situação final do(a) aluno(a) na disciplina.
      */
     get situacao() {
-        naoFizIssoAinda();
+        const media = this.media;
+		const presenca = this.presenca;
+
+		if (media >= 7 && presenca >= 75) {
+			return "AP";
+		} else if (media < 7 && presenca < 75) {
+			return "RMF";
+		} else if (media < 7) {
+			return "RM";
+		} else {
+			return "RF";
+		}
     }
 
     // EXERCÍCIO 9.
@@ -171,7 +246,21 @@ class AlunoMatricula {
      * @returns {String} A situação final do(a) aluno(a) na disciplina, escrito por extenso.
      */
     get situacaoPorExtenso() {
-        naoFizIssoAinda();
+        const situacao = this.situacao;
+		const genero = this.genero === "M" ? "o" : "a";
+		let situacaoPorExtenso = "";
+
+		if (situacao === "AP") {
+			situacaoPorExtenso = `aprovad${genero}`;
+		} else if (situacao === "RM") {
+			situacaoPorExtenso = `reprovad${genero} por média`;
+		} else if (situacao === "RF") {
+			situacaoPorExtenso = `reprovad${genero} por falta`;
+		} else if (situacao === "RMF") {
+			situacaoPorExtenso = `reprovad${genero} por média e falta`;
+		}
+
+		return situacaoPorExtenso;
     }
 
     // EXERCÍCIO 10.
@@ -198,8 +287,9 @@ class AlunoMatricula {
      * @returns {String} O status descritivo do(a) aluno(a).
      */
     get status() {
-        naoFizIssoAinda();
-    }
+		const genero = this.#genero === "F" ? "a" : "o";
+		return `${this.#nome} tem média ${this.media} na disciplina de ${this.#disciplina} e foi ${this.situacaoPorExtenso} com ${Math.floor(this.#presenca)}% de presença.`;
+	}
 }
 
 // EXERCÍCIO 11.
@@ -218,7 +308,7 @@ class AlunoMatricula {
  * Coloque esse <li> dentro do <ul> que está dentro da <div> com a classe ex10e11 no ado2.html.
  */
 function criarItemNota() {
-    naoFizIssoAinda();
+	naoFizIssoAinda();
 }
 
 // EXERCÍCIO 12.
@@ -304,3 +394,32 @@ function verificarAlunoMatriculado() {
 // * area
 // * circunferencia
 // Se o raio recebido no construtor não for um número, lance um TypeError. Se for negativo, lance RangeError.
+class Circulo {
+	#raio;
+	
+	constructor(raio) {
+		if (!Number.isFinite(raio)) {
+			throw new TypeError('O raio deve ser um número');
+		}
+		if (raio < 0) {
+			throw new RangeError('O raio não pode ser negativo');
+		}
+		this.#raio = raio;
+	}
+
+	get raio() {
+		return this.#raio;
+	}
+
+	get diametro() {
+		return this.#raio * 2;
+	}
+
+	get area() {
+		return Math.PI * this.#raio ** 2;
+	}
+
+	get circunferencia() {
+		return 2 * Math.PI * this.#raio;
+	}
+}
