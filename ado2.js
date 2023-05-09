@@ -140,15 +140,26 @@ class AlunoMatricula {
      */
     constructor(nome, genero, disciplina, ados, presenca) {
         
-		if (typeof nome !== 'string' || nome.trim().length === 0) {
+		if (typeof nome !== 'string') {
 			throw new TypeError ('nome inválido '+nome);
 		}
-		if (typeof genero !== 'string' || !['M', 'F'].includes(genero)) {
+		if (nome.trim().length === 0){
+			throw new RangeError ('nome inválido '+nome);
+		}
+			
+		if (typeof genero !== 'string') {
 			throw new TypeError('gênero inválido '+genero);
 		}
-		if (typeof disciplina !== 'string' || disciplina.trim().length === 0) {
+		if(!['M', 'F'].includes(genero)) {
+			throw new RangeError('gênero inválido '+genero);			
+		}
+		if (typeof disciplina !== 'string'){
 			throw new TypeError('a disciplina inválida '+disciplina);
 		}
+		if (disciplina.trim().length === 0) {
+			throw new RangeError('a disciplina inválida '+disciplina);
+		}
+		
 		if (!Array.isArray(ados) || ados.some(nota => !(nota instanceof Nota))) {
 			throw new TypeError('O parâmetro "ados" deve ser um array de objetos da classe "Nota".');
 		}
