@@ -166,7 +166,10 @@ class AlunoMatricula {
 		if (ados.reduce((total, nota) => total + nota.peso, 0) !== 10) {
 			throw new RangeError('O peso das notas deve somar 10.');
 		}
-		if (!Number.isFinite(presenca) || presenca < 0 || presenca > 100) {
+		if (!Number.isFinite(presenca)){
+			throw new TypeError('valor invalido');
+		}
+		if (presenca < 0 || presenca > 100) {
 			throw new RangeError('valor invalido');
 		}
 
