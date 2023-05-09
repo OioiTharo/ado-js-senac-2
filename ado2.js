@@ -139,23 +139,24 @@ class AlunoMatricula {
      * @throw RangeError Se o valor de qualquer parâmetro não for aceitável.
      */
     constructor(nome, genero, disciplina, ados, presenca) {
-        if (typeof nome !== 'string' ) {
-			throw new RangeError ('Nome inválido');
+        
+		if (typeof nome !== 'string' || nome.trim().length === 0) {
+			throw new TypeError ('nome inválido '+nome);
 		}
-		if (typeof genero !== 'string' || (genero !== 'M' && genero !== 'F')) {
-			throw new RangeError('Gênero inválido');
+		if (typeof genero !== 'string' || !['M', 'F'].includes(genero)) {
+			throw new TypeError('gênero inválido '+genero);
 		}
-		if (typeof disciplina !== 'string' || !disciplina.trim()) {
-			throw new TypeError('Disciplina inválido');
+		if (typeof disciplina !== 'string' || disciplina.trim().length === 0) {
+			throw new TypeError('a disciplina inválida '+disciplina);
 		}
 		if (!Array.isArray(ados) || ados.some(nota => !(nota instanceof Nota))) {
-			throw new TypeError('A lista de ADOs deve ser um array de instâncias da classe Nota');
+			throw new TypeError('O parâmetro "ados" deve ser um array de objetos da classe "Nota".');
 		}
-		if (presenca < 0 || presenca > 100 || typeof presenca !== 'number') {
-			throw new RangeError('A presença deve ser um número entre 0 e 100');
+		if (ados.reduce((total, nota) => total + nota.peso, 0) !== 10) {
+			throw new RangeError('O peso das notas deve somar 10.');
 		}
-		if (ados.reduce((sum, nota) => sum + nota.peso, 0) !== 10) {
-			throw new RangeError('A soma dos pesos das notas deve ser igual a 10');
+		if (!Number.isFinite(presenca) || presenca < 0 || presenca > 100) {
+			throw new RangeError('valor invalido');
 		}
 
 		this.#nome = nome;
@@ -163,7 +164,13 @@ class AlunoMatricula {
 		this.#disciplina = disciplina;
 		this.#ados = ados;
 		this.#presenca = presenca;
-    }
+}
+
+
+
+
+
+
 
     // EXERCÍCIO 6.
     // Crie os métodos getters necessários de todos os parâmetros recebidos no construtor aqui.
@@ -307,6 +314,7 @@ class AlunoMatricula {
  * Onde XXX e YYY devem ser IDs que não existem em nenhum outro lugar da página.
  * Coloque esse <li> dentro do <ul> que está dentro da <div> com a classe ex10e11 no ado2.html.
  */
+
 function criarItemNota() {
 	naoFizIssoAinda();
 }
