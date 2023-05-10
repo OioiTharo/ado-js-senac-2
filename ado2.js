@@ -313,6 +313,7 @@ class AlunoMatricula {
 	}
 }
 
+
 // EXERCÍCIO 11.
 /**
  * No formulário, ao clicar no botão "Adicionar nota", uma nova caixinha que permita a adição de uma nova nota deve
@@ -330,7 +331,23 @@ class AlunoMatricula {
  */
 
 function criarItemNota() {
-	naoFizIssoAinda();
+	const ul = document.querySelector('.ex11a13 ul'); 
+	const notaId = `nota-${ul.children.length + 1}`; 
+	const pesoId = `peso-${ul.children.length + 1}`; 
+
+	const li = document.createElement('li'); 
+	li.innerHTML = `
+		<div>
+		  <label for="${notaId}">Nota:</label>
+		  <input type="text" id="${notaId}">
+		</div>
+		<div>
+		  <label for="${pesoId}">Peso:</label>
+		  <input type="text" id="${pesoId}">
+		</div> 
+	`;
+
+	ul.appendChild(li); 
 }
 
 // EXERCÍCIO 12.
@@ -339,7 +356,12 @@ function criarItemNota() {
  * Se não houver mais nenhum <li> a ser removido, nada deve ser feito.
  */
 function removerItemNota() {
-    naoFizIssoAinda();
+  const ul = document.querySelector('.ex11a13 ul'); 
+
+  if (ul.children.length > 0) { 
+	const lastLi = ul.children[ul.children.length - 1];
+	ul.removeChild(lastLi); 
+  }
 }
 
 // EXERCÍCIO 13.
@@ -367,6 +389,7 @@ function removerItemNota() {
  * - O peso das notas deve somar 10.
  * E as verificações correspondentes são executadas exatamente nesta ordem.
  */
+ 
 function verificarAlunoMatriculado() {
     function lerNota(texto) {
         return lerNumero(texto, {min: 0, max: 10, casas: 2, erro: "Informe a nota corretamente."});
@@ -380,33 +403,39 @@ function verificarAlunoMatriculado() {
         return lerNumero(texto, {min: 0, max: 100, casas: 0, erro: "Informe a presença corretamente."});
     }
 
-    function lerTexto(oQue, texto) {
+	function lerTexto(oQue, texto) {
         if (texto.trim() === "") throw new Error(`Informe ${oQue} corretamente.`);
         return texto.trim();
     }
 
+
     // Comece a mexer no código daqui para baixo.
     let texto;
-    try {
+	try {
         const nome = lerTexto("o nome do(a) aluno(a)", document.querySelector("#nome").value);
-        const escolheuEle = naoFizIssoAinda();
-        const escolheuEla = naoFizIssoAinda();
+        const escolheuEle = document.querySelector("#masculino").checked;
+        const escolheuEla = document.querySelector("#feminino").checked;
         if (!escolheuEle && !escolheuEla) throw new Error("Escolha o gênero do(a) aluno(a) corretamente.");
         const genero = escolheuEle ? "M" : "F";
-        const disciplina = naoFizIssoAinda();
+        const disciplina = lerTexto("o nome da disciplina", document.querySelector("#disciplina").value);
         const ados = [];
-        for (const item of document.querySelectorAll(naoFizIssoAinda())) {
-            const nota = lerNota(naoFizIssoAinda());
-            const peso = lerPeso(naoFizIssoAinda());
-            ados.push(new Nota(naoFizIssoAinda()));
+        let somaPesos = 0;
+        for (const item of document.querySelectorAll(".nota")) {
+            const nota = lerNota(item.querySelector(".nota-valor").value);
+            const peso = lerPeso(item.querySelector(".nota-peso").value);
+            ados.push(new Nota(nota, peso));
+            somaPesos += peso;
         }
-        const presenca = lerPresenca(naoFizIssoAinda());
-        texto = new AlunoMatricula(naoFizIssoAinda()).status;
+        if (somaPesos !== 10) throw new Error("O peso das notas deve somar 10.");
+        const presenca = lerPresenca(document.querySelector("#presenca").value);
+        const matricula = new AlunoMatricula(nome, genero, disciplina, ados, presenca);
+        texto = matricula.status;
     } catch (e) {
-        texto = naoFizIssoAinda();
+        texto = e.message;
     }
-    document.querySelector("#situacao").innerHTML = naoFizIssoAinda();
+    document.querySelector("#situacao").innerHTML = texto;
 }
+
 
 // EXERCÍCIO 14.
 //
