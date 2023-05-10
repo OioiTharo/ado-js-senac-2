@@ -400,6 +400,7 @@ function verificarAlunoMatriculado() {
     }
 
     function lerPresenca(texto) {
+		//console.log("Presença: " + texto);
         return lerNumero(texto, {min: 0, max: 100, casas: 0, erro: "Informe a presença corretamente."});
     }
 
@@ -408,32 +409,31 @@ function verificarAlunoMatriculado() {
         return texto.trim();
     }
 
-
     // Comece a mexer no código daqui para baixo.
     let texto;
 	try {
         const nome = lerTexto("o nome do(a) aluno(a)", document.querySelector("#nome").value);
-        const escolheuEle = document.querySelector("#masculino").checked;
-        const escolheuEla = document.querySelector("#feminino").checked;
+        const escolheuEle = document.querySelector("#ele").checked;
+        const escolheuEla = document.querySelector("#ela").checked;
         if (!escolheuEle && !escolheuEla) throw new Error("Escolha o gênero do(a) aluno(a) corretamente.");
         const genero = escolheuEle ? "M" : "F";
         const disciplina = lerTexto("o nome da disciplina", document.querySelector("#disciplina").value);
         const ados = [];
         let somaPesos = 0;
-        for (const item of document.querySelectorAll(".nota")) {
-            const nota = lerNota(item.querySelector(".nota-valor").value);
-            const peso = lerPeso(item.querySelector(".nota-peso").value);
+        for (const item of document.querySelectorAll(".ex11a13 > ul > li")) {
+            const nota = lerNota(item.querySelectorAll("input")[0].value);
+            const peso = lerPeso(item.querySelectorAll("input")[1].value);
             ados.push(new Nota(nota, peso));
             somaPesos += peso;
         }
-        if (somaPesos !== 10) throw new Error("O peso das notas deve somar 10.");
         const presenca = lerPresenca(document.querySelector("#presenca").value);
+
         const matricula = new AlunoMatricula(nome, genero, disciplina, ados, presenca);
         texto = matricula.status;
     } catch (e) {
         texto = e.message;
     }
-    document.querySelector("#situacao").innerHTML = texto;
+    document.querySelector("#situacao").value = texto;
 }
 
 
